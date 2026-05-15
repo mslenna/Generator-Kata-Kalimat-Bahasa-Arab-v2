@@ -275,7 +275,7 @@ space-x-2 transform active:scale-[0.98]">
             loading.classList.remove('hidden');
             placeholder.classList.add('hidden');
             content.classList.add('hidden');
-
+            const randomSeed = Math.floor(Math.random() * 1000000);
             // Prompt modified to include usage sentence for words
             const systemPrompt = `Anda adalah pakar bahasa Arab yang kreatif. Tugas Anda adalah memberikan kosakata atau kalimat yang UNIK, SPESIFIK, dan BERVARIASI. 
             
