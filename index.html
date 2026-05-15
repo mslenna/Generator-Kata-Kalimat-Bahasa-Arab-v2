@@ -277,15 +277,26 @@ space-x-2 transform active:scale-[0.98]">
             content.classList.add('hidden');
 
             // Prompt modified to include usage sentence for words
-            const systemPrompt = `Anda adalah pakar bahasa Arab. Hasilkan ${currentMode === 'word' ? 'satu kata' : 'satu kalimat'} bahasa Arab bertema "${topic}" untuk level "${level}". 
-            Output JSON: {
+            const systemPrompt = `Anda adalah pakar bahasa Arab yang kreatif. Tugas Anda adalah memberikan kosakata atau kalimat yang UNIK, SPESIFIK, dan BERVARIASI. 
+            
+            ATURAN UTAMA:
+            1. Jika user memberikan tema "${topic}", berikan hasil yang SANGAT TERKAIT dengan tema tersebut, tetapi pilihlah objek, aktivitas, atau konsep yang spesifik agar tidak repetitif.
+            2. berikan kata-kata yang sesuai level yang dipilih dan itu pun harus bervariasi.
+            3. Gunakan variasi kata kerja, kata benda, dan kata sifat yang berbeda di setiap request.
+            
+            Hasilkan ${currentMode === 'word' ? 'satu kata' : 'satu kalimat'} bahasa Arab untuk level "${level}". 
+            
+            Gunakan ID Unik: ${randomSeed} sebagai dasar pemilihan kata agar hasil selalu berbeda.
+            
+            Output HARUS dalam format JSON: {
                 "arabic": "teks arab berharakat", 
                 "transliteration": "cara baca", 
                 "translation": "arti Indonesia", 
-                "explanation": "penjelasan singkat",
+                "explanation": "penjelasan singkat tentang konteks atau keunikan kata/kalimat ini",
                 "usage_sentence": "${currentMode === 'word' ? 'kalimat lengkap yang menggunakan kata tersebut' : ''}",
                 "usage_translation": "${currentMode === 'word' ? 'terjemahan kalimat tersebut' : ''}"
             }.`;
+            
             
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
 
