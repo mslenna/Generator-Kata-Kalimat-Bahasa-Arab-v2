@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Bahasa Arab Gemini</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .arabic-text { font-family: 'Amiri', serif; direction: rtl; }
+        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .play-btn:active { transform: scale(0.9); }
+        .loading-ring { border-top-color: transparent; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen pb-12">
+
+    <header class="gradient-bg text-white py-12 px-4 text-center shadow-lg mb-8">
+        <h1 class="text-4xl font-bold mb-2 tracking-tight">مولد اللغة العربية</h1>
+        <p class="text-lg opacity-90">Generator Kata & Kalimat Bahasa Arab AI</p>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <!-- Left Column: Settings -->
+            <div class="md:col-span-1 space-y-6">
+                <section class="glass p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 mb-4 flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 
+0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 
+0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" 
+stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        Konfigurasi API
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Google Gemini API Key</label>
+                            <input type="password" id="apiKey" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="Paste key di 
+sini...">
+                            <p class="text-[10px] text-slate-400 mt-1 italic">*Tersimpan lokal di browser Anda.</p>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Pilih Model</label>
+                            <select id="modelSelect" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                                <option value="gemini-3-flash-preview">Gemini 3 Flash Preview</option>
+                                <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                                <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="glass p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 mb-4">Opsi Konten</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Jenis Output</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="setMode('word')" id="btnWord" class="mode-btn p-2 text-sm rounded-lg border-2 border-indigo-600 bg-indigo-50 text-indigo-700 font-bold transition-all">Kata tunggal</button>
+                                <button onclick="setMode('sentence')" id="btnSentence" class="mode-btn p-2 text-sm rounded-lg border-2 border-slate-200 bg-white text-slate-600 font-medium transition-all">Kalimat</button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Topik / Tema</label>
+                            <input type="text" id="topic" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Contoh: Sekolah, Alam, Perjalanan...">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Level</label>
+                            <select id="level" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-sm">
+                                <option value="mubtadi' (pemula)">Pemula</option>
+                                <option value="mutawassit (menengah)">Menengah</option>
+                                <option value="mutaqaddim (ahli)">Mahir</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column: Result -->
+            <div class="md:col-span-2">
+                <div class="glass min-h-[400px] rounded-2xl shadow-md border border-slate-200 overflow-hidden flex flex-col">
+                    <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Hasil Generasi</span>
+                        <div id="loading" class="hidden">
+                            <div class="flex items-center text-indigo-600 text-xs font-bold animate-pulse">
+                                <svg class="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Memproses...
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="resultPlaceholder" class="flex-grow flex flex-col items-center justify-center p-12 text-center text-slate-400">
+                        <svg class="w-16 h-16 mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 
+19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        <p class="text-lg font-medium">Klik "Generate" untuk memulai</p>
+                        <p class="text-sm">Pastikan API Key sudah dimasukkan dengan benar.</p>
+                    </div>
+
+                    <div id="resultContent" class="hidden flex-grow p-8 flex flex-col items-center justify-center space-y-6">
+                        <div class="relative group">
+                            <div id="arabicDisplay" class="arabic-text text-6xl md:text-7xl text-slate-800 text-center leading-relaxed"></div>
+                            <button id="ttsBtn" onclick="playArabicAudio()" class="mt-4 mx-auto flex items-center justify-center w-12 h-12 bg-indigo-100 text-indigo-600 rounded-full hover:bg-indigo-200 transition-all play-btn 
+shadow-sm" title="Dengarkan Suara">
+                                <svg id="playIcon" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 
+011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 
+011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.984 3.984 0 00-1.172-2.828a1 1 0 010-1.415z" clip-rule="evenodd"></path></svg>
+                                <div id="ttsLoading" class="hidden animate-spin rounded-full h-5 w-5 border-2 border-indigo-600 border-t-transparent"></div>
+                            </button>
+                        </div>
+                        
+                        <div class="w-full space-y-4 pt-6 border-t border-slate-100">
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-400 uppercase">Transliterasi</label>
+                                <p id="transDisplay" class="text-lg italic text-slate-600 font-medium"></p>
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-400 uppercase">Terjemahan (Indonesia)</label>
+                                <p id="indoDisplay" class="text-xl text-slate-800 font-bold"></p>
+                            </div>
+
+                            <div id="usageSection" class="hidden bg-indigo-50/50 p-4 rounded-xl border border-indigo-100">
+                                <label class="text-[10px] font-bold text-indigo-400 uppercase">Contoh Penggunaan</label>
+                                <p id="usageArabic" class="arabic-text text-2xl text-slate-700 mt-1"></p>
+                                <p id="usageIndo" class="text-sm text-slate-600 italic mt-1"></p>
+                            </div>
+
+                            <div id="explanationBox">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase">Penjelasan Singkat</label>
+                                <p id="explanationDisplay" class="text-sm text-slate-500"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 bg-slate-50 border-t border-slate-100">
+                        <button onclick="generateContent()" class="w-full py-4 px-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-lg shadow-indigo-200 transition-all flex items-center justify-center 
+space-x-2 transform active:scale-[0.98]">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            <span>Generate Bahasa Arab</span>
+                        </button>
+                        
+                        <div id="copyAction" class="hidden mt-4">
+                            <button onclick="copyToClipboard()" class="w-full py-2 text-sm text-slate-500 hover:text-indigo-600 font-medium flex items-center justify-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 
+002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                                Salin ke Clipboard
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- History -->
+                <div class="mt-6">
+                    <h3 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-3">Riwayat Sesi</h3>
+                    <div id="historyList" class="space-y-2">
+                        <!-- History items go here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- UI Notification -->
+    <div id="toast" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full text-sm font-medium shadow-2xl transition-all duration-300 translate-y-20 opacity-0 z-50">
+        Pesan di sini
+    </div>
+
+    <script>
+        let currentMode = 'word';
+        let currentArabicText = '';
+        const apiKeyInput = document.getElementById('apiKey');
+        
+        function pcmToWav(pcmData, sampleRate) {
+            const buffer = new ArrayBuffer(44 + pcmData.length * 2);
+            const view = new DataView(buffer);
+            const writeString = (offset, string) => {
+                for (let i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i));
+                }
+            };
+            writeString(0, 'RIFF');
+            view.setUint32(4, 32 + pcmData.length * 2, true);
+            writeString(8, 'WAVE');
+            writeString(12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, 1, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true);
+            view.setUint16(32, 2, true);
+            view.setUint16(34, 16, true);
+            writeString(36, 'data');
+            view.setUint32(40, pcmData.length * 2, true);
+            for (let i = 0; i < pcmData.length; i++) {
+                view.setInt16(44 + i * 2, pcmData[i], true);
+            }
+            return new Blob([buffer], { type: 'audio/wav' });
+        }
+
+        async function playArabicAudio() {
+            if (!currentArabicText) return;
+            const key = apiKeyInput.value.trim();
+            if (!key) { showToast("API Key diperlukan untuk fitur suara!"); return; }
+
+            const btnIcon = document.getElementById('playIcon');
+            const btnLoading = document.getElementById('ttsLoading');
+            
+            btnIcon.classList.add('hidden');
+            btnLoading.classList.remove('hidden');
+
+            try {
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${key}`;
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: `Say clearly in Arabic: ${currentArabicText}` }] }],
+                        generationConfig: {
+                            responseModalities: ["AUDIO"],
+                            speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Zubenelgenubi" } } }
+                        }
+                    })
+                });
+
+                const result = await response.json();
+                const part = result?.candidates?.[0]?.content?.parts?.[0];
+                const audioBase64 = part?.inlineData?.data;
+                const mimeType = part?.inlineData?.mimeType;
+
+                if (audioBase64) {
+                    const sampleRate = parseInt(mimeType.match(/rate=(\d+)/)?.[1] || "24000", 10);
+                    const binary = atob(audioBase64);
+                    const pcmData = new Int16Array(new ArrayBuffer(binary.length));
+                    for (let i = 0; i < binary.length / 2; i++) {
+                        pcmData[i] = binary.charCodeAt(i * 2) | (binary.charCodeAt(i * 2 + 1) << 8);
+                    }
+                    const wavBlob = pcmToWav(pcmData, sampleRate);
+                    const audioUrl = URL.createObjectURL(wavBlob);
+                    const audio = new Audio(audioUrl);
+                    audio.play();
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Gagal memutar suara.");
+            } finally {
+                btnIcon.classList.remove('hidden');
+                btnLoading.classList.add('hidden');
+            }
+        }
+
+        async function generateContent() {
+            const key = apiKeyInput.value.trim();
+            if (!key) { showToast("API Key diperlukan!"); return; }
+            localStorage.setItem('gemini_arabic_key', key);
+
+            const model = document.getElementById('modelSelect').value;
+            const topic = document.getElementById('topic').value || "random";
+            const level = document.getElementById('level').value;
+            const loading = document.getElementById('loading');
+            const placeholder = document.getElementById('resultPlaceholder');
+            const content = document.getElementById('resultContent');
+
+            loading.classList.remove('hidden');
+            placeholder.classList.add('hidden');
+            content.classList.add('hidden');
+
+            // Prompt modified to include usage sentence for words
+            const systemPrompt = `Anda adalah pakar bahasa Arab. Hasilkan ${currentMode === 'word' ? 'satu kata' : 'satu kalimat'} bahasa Arab bertema "${topic}" untuk level "${level}". 
+            Output JSON: {
+                "arabic": "teks arab berharakat", 
+                "transliteration": "cara baca", 
+                "translation": "arti Indonesia", 
+                "explanation": "penjelasan singkat",
+                "usage_sentence": "${currentMode === 'word' ? 'kalimat lengkap yang menggunakan kata tersebut' : ''}",
+                "usage_translation": "${currentMode === 'word' ? 'terjemahan kalimat tersebut' : ''}"
+            }.`;
+            
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: "Generate now." }] }],
+                        systemInstruction: { parts: [{ text: systemPrompt }] },
+                        generationConfig: { responseMimeType: "application/json" }
+                    })
+                });
+
+                const data = await response.json();
+                const parsed = JSON.parse(data.candidates[0].content.parts[0].text);
+
+                displayResult(parsed);
+                addToHistory(parsed);
+            } catch (error) {
+                showToast("Error: Periksa API Key atau model.");
+                placeholder.classList.remove('hidden');
+            } finally {
+                loading.classList.add('hidden');
+            }
+        }
+
+        function displayResult(data) {
+            document.getElementById('resultContent').classList.remove('hidden');
+            document.getElementById('arabicDisplay').innerText = data.arabic;
+            document.getElementById('transDisplay').innerText = data.transliteration;
+            document.getElementById('indoDisplay').innerText = data.translation;
+            document.getElementById('explanationDisplay').innerText = data.explanation;
+            
+            currentArabicText = data.arabic;
+
+            const usageSection = document.getElementById('usageSection');
+            if (currentMode === 'word' && data.usage_sentence) {
+                usageSection.classList.remove('hidden');
+                document.getElementById('usageArabic').innerText = data.usage_sentence;
+                document.getElementById('usageIndo').innerText = data.usage_translation;
+            } else {
+                usageSection.classList.add('hidden');
+            }
+            
+            document.getElementById('copyAction').classList.remove('hidden');
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            const btnWord = document.getElementById('btnWord');
+            const btnSentence = document.getElementById('btnSentence');
+            
+            if (mode === 'word') {
+                btnWord.className = 'mode-btn p-2 text-sm rounded-lg border-2 border-indigo-600 bg-indigo-50 text-indigo-700 font-bold transition-all';
+                btnSentence.className = 'mode-btn p-2 text-sm rounded-lg border-2 border-slate-200 bg-white text-slate-600 font-medium transition-all';
+            } else {
+                btnSentence.className = 'mode-btn p-2 text-sm rounded-lg border-2 border-indigo-600 bg-indigo-50 text-indigo-700 font-bold transition-all';
+                btnWord.className = 'mode-btn p-2 text-sm rounded-lg border-2 border-slate-200 bg-white text-slate-600 font-medium transition-all';
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        function addToHistory(data) {
+            const historyList = document.getElementById('historyList');
+            const item = document.createElement('div');
+            item.className = 'p-3 bg-white border border-slate-200 rounded-xl text-sm flex justify-between items-center hover:border-indigo-300 transition-colors cursor-pointer group shadow-sm';
+            item.onclick = () => displayResult(data);
+            
+            item.innerHTML = `
+                <div class="flex flex-col">
+                    <span class="arabic-text text-lg text-slate-700">${data.arabic}</span>
+                    <span class="text-[10px] text-slate-400">${data.translation}</span>
+                </div>
+                <svg class="w-4 h-4 text-slate-300 group-hover:text-indigo-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 
+7-7 7"></path></svg>
+            `;
+            
+            historyList.prepend(item);
+            if (historyList.children.length > 5) {
+                historyList.lastElementChild.remove();
+            }
+        }
+
+        function copyToClipboard() {
+            const trans = document.getElementById('transDisplay').innerText;
+            const indo = document.getElementById('indoDisplay').innerText;
+            const textToCopy = `${currentArabicText} (${trans}) - ${indo}`;
+            
+            const tempInput = document.createElement('textarea');
+            tempInput.value = textToCopy;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            
+            showToast("Berhasil disalin ke clipboard!");
+        }
+
+        window.onload = () => {
+            const savedKey = localStorage.getItem('gemini_arabic_key');
+            if (savedKey) {
+                apiKeyInput.value = savedKey;
+            }
+        };
+    </script>
+</body>
+</html>
